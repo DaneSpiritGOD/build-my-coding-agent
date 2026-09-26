@@ -39,7 +39,7 @@ while (true)
     session.AppendServerResponse(response);
 
     tryGetUserInput = response.StopReason != StopReason.ToolUse;
-    Console.WriteLine($"Stop reason: {response.StopReason}");
+    // Console.WriteLine($"Stop reason: {response.StopReason}");
     foreach (var block in response.Content)
     {
         if (block.TryPickText(out var textBlock))
