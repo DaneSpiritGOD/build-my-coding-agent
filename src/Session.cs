@@ -34,4 +34,16 @@ sealed class Session
             ]),
         });
     }
+
+    public void AppendToolUseResult(string toolId, Exception ex)
+    {
+        messages.Add(new()
+        {
+            Role = Role.User,
+            Content = new MessageParamContent(
+            [
+                new ContentBlockParam(new ToolResultBlockParam() { ToolUseID = toolId, Content = ex.ToString(), IsError = true }),
+            ]),
+        });
+    }
 }

@@ -49,8 +49,15 @@ while (true)
 
         if (block.TryPickToolUse(out var toolUseBlock))
         {
-            var result = RunTool(toolUseBlock.Name, toolUseBlock.Input);
-            session.AppendToolUseResult(toolUseBlock.ID, result);
+            try
+            {
+                var result = RunTool(toolUseBlock.Name, toolUseBlock.Input);
+                session.AppendToolUseResult(toolUseBlock.ID, result);
+            }
+            catch (Exception ex)
+            {
+                session.AppendToolUseResult(toolUseBlock.ID, ex);
+            }
         }
     }
 }
@@ -71,7 +78,5 @@ void ShowServerResponse(string message)
 string RunTool(string toolName, IReadOnlyDictionary<string, JsonElement> toolInput)
 {
     Console.WriteLine($"Tool call - {toolName}");
-    var result = tools.First(x => x.Name == toolName).Run(toolInput);
-    // Console.Write($"Tool call ({toolName}) result: {result}");
-    return result;
+    return tools.First(x => x.Name == toolName).Run(toolInput);
 }
