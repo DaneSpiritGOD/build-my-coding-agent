@@ -14,8 +14,24 @@ sealed class Session
         });
     }
 
-    public void AppendSeverMessage(Message message)
+    public void AppendServerResponse(Message response)
     {
-        messages.Add(MessageParam.FromRawUnchecked(message.RawData));
+        messages.Add(new()
+        {
+            Role = Role.Assistant,
+            Content = response.Content.Select(block => new ContentBlockParam(block.Json)).ToList(),
+        });
+    }
+
+    public void AppendToolUseResult(string toolId, string result)
+    {
+        messages.Add(new()
+        {
+            Role = Role.User,
+            Content = new MessageParamContent(
+            [
+                new ContentBlockParam(new ToolResultBlockParam() { ToolUseID = toolId, Content = result }),
+            ]),
+        });
     }
 }
