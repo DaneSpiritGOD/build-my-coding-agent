@@ -7,7 +7,7 @@ class ReadFileTool : ITool
 
     public string Run(IReadOnlyDictionary<string, JsonElement> input)
     {
-        return RunCore(input["path"].GetString());
+        return RunCore(input["path"].GetString()!);
     }
 
     static string RunCore(string path)
