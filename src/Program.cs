@@ -89,7 +89,7 @@ void ShowServerResponse(string message)
 
 ToolUseResult RunTool(string toolId, string toolName, IReadOnlyDictionary<string, JsonElement> toolInput)
 {
-    Console.WriteLine($"Tool call: {toolName}({string.Join(", ", toolInput.Select(x => x.Key + ": " + x.Value.ToString()))})");
+    Console.WriteLine($"Tool: {toolName}({string.Join(", ", toolInput.Select(x => x.Key + ": " + x.Value.ToString()))})");
 
     try
     {
