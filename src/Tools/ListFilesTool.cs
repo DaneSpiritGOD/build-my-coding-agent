@@ -39,6 +39,7 @@ class ListFilesTool : ITool
             path = Environment.CurrentDirectory;
         }
 
+        PathUtils.EnsurePathIsInCurrentDirectory(path, out _);
         return Directory.GetFileSystemEntries(path!);
     }
 }

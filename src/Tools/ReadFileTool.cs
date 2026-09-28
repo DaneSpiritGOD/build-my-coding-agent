@@ -33,6 +33,7 @@ class ReadFileTool : ITool
 
     static string Run(string path)
     {
+        PathUtils.EnsurePathIsInCurrentDirectory(path, out _);
         return File.ReadAllText(path);
     }
 }
