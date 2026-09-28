@@ -45,14 +45,12 @@ while (true)
     }
     catch (Exception ex)
     {
-        Console.Error.WriteLine($"API 调用失败，结束会话: {ex.Message}");
+        Console.Error.WriteLine($"LLM API request failed, terminating session: {ex.Message}");
         break;
     }
 
     session.AppendServerResponse(response);
-
     tryGetUserInput = response.StopReason != StopReason.ToolUse;
-    Console.WriteLine($"Stop reason: {response.StopReason}");
 
     var toolResults = new List<(string ToolId, ToolUseResult Result)>();
     foreach (var block in response.Content)
@@ -91,9 +89,10 @@ void ShowServerResponse(string message)
 
 ToolUseResult RunTool(string toolId, string toolName, IReadOnlyDictionary<string, JsonElement> toolInput)
 {
+    Console.WriteLine($"Tool call: {toolName}({string.Join(", ", toolInput.Select(x => x.Key + ": " + x.Value.ToString()))})");
+
     try
     {
-        Console.WriteLine($"Tool call ({toolId}): {toolName} | {string.Join(", ", toolInput.Select(x => x.Key + ": " + x.Value.ToString()))}");
         return tools.First(x => x.Name == toolName).Run(toolInput);
     }
     catch (Exception ex)
