@@ -1,12 +1,26 @@
+using System.Text.Json;
 using Anthropic.Models.Messages;
+
+struct SessionEvent
+{
+    public required string EventName { get; init; }
+    public required string Content { get; init; }
+}
 
 sealed class Session
 {
     List<MessageParam> messages = new ();
     public List<MessageParam> Messages => messages;
 
+    public event EventHandler<SessionEvent>? SessionEventOccurring;
+
     public void AppendUserMessage(string msg)
     {
+        SessionEventOccurring?.Invoke(this, new()
+        {
+            EventName = "UserMessage",
+            Content = msg,
+        });
         messages.Add(new()
         {
             Role = Role.User,
@@ -16,6 +30,11 @@ sealed class Session
 
     public void AppendServerResponse(Message response)
     {
+        SessionEventOccurring?.Invoke(this, new()
+        {
+            EventName = "ServerResponse",
+            Content = response.ToString(),
+        });
         messages.Add(new()
         {
             Role = Role.Assistant,
@@ -23,26 +42,24 @@ sealed class Session
         });
     }
 
-    public void AppendToolUseResult(string toolId, string result)
+    public void AppendToolUseResult(string toolId, ToolUseResult result)
     {
-        messages.Add(new()
+        SessionEventOccurring?.Invoke(this, new()
         {
-            Role = Role.User,
-            Content = new MessageParamContent(
-            [
-                new ContentBlockParam(new ToolResultBlockParam() { ToolUseID = toolId, Content = result }),
-            ]),
+            EventName = "ToolUseResult",
+            Content = $"{toolId} {result}",
         });
-    }
-
-    public void AppendToolUseResult(string toolId, Exception ex)
-    {
         messages.Add(new()
         {
             Role = Role.User,
             Content = new MessageParamContent(
             [
-                new ContentBlockParam(new ToolResultBlockParam() { ToolUseID = toolId, Content = ex.ToString(), IsError = true }),
+                new ContentBlockParam(new ToolResultBlockParam()
+                {
+                    ToolUseID = toolId,
+                    Content = JsonSerializer.Serialize(result),
+                    IsError = result.Error is not null,
+                }),
             ]),
         });
     }

@@ -26,9 +26,9 @@ class ReadFileTool : ITool
         };
     }
 
-    public string Run(IReadOnlyDictionary<string, JsonElement> input)
+    public ToolUseResult Run(IReadOnlyDictionary<string, JsonElement> input)
     {
-        return Run(input["path"].GetString()!);
+        return new() { Result = Run(input["path"].GetString()!)};
     }
 
     static string Run(string path)
