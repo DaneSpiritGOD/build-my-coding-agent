@@ -7,6 +7,7 @@ List<ITool> tools = new List<ITool>()
 {
     new ReadFileTool(),
     new ListFilesTool(),
+    new EditFileTool(),
 };
 
 var clientTools = tools.Select(x => new ToolUnion(x.GetTool())).ToArray();
