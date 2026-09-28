@@ -42,25 +42,28 @@ sealed class Session
         });
     }
 
-    public void AppendToolUseResult(string toolId, ToolUseResult result)
+    public void AppendToolUseResults(IReadOnlyList<(string ToolId, ToolUseResult Result)> results)
     {
-        SessionEventOccurring?.Invoke(this, new()
+        var blocks = new List<ContentBlockParam>();
+        foreach (var (toolId, result) in results)
         {
-            EventName = "ToolUseResult",
-            Content = $"{toolId} {result}",
-        });
+            SessionEventOccurring?.Invoke(this, new()
+            {
+                EventName = "ToolUseResult",
+                Content = $"{toolId} {result}",
+            });
+            blocks.Add(new ContentBlockParam(new ToolResultBlockParam()
+            {
+                ToolUseID = toolId,
+                Content = JsonSerializer.Serialize(result),
+                IsError = result.Error is not null,
+            }));
+        }
+
         messages.Add(new()
         {
             Role = Role.User,
-            Content = new MessageParamContent(
-            [
-                new ContentBlockParam(new ToolResultBlockParam()
-                {
-                    ToolUseID = toolId,
-                    Content = JsonSerializer.Serialize(result),
-                    IsError = result.Error is not null,
-                }),
-            ]),
+            Content = new MessageParamContent(blocks),
         });
     }
 }
