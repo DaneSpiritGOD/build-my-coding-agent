@@ -3,17 +3,7 @@ using Anthropic.Models.Messages;
 
 class ReadFileTool : ITool
 {
-    public string Name => "ReadFile";
-
-    public string Run(IReadOnlyDictionary<string, JsonElement> input)
-    {
-        return RunCore(input["path"].GetString()!);
-    }
-
-    static string RunCore(string path)
-    {
-        return File.ReadAllText(path);
-    }
+    public string Name => "read_file";
 
     public Tool GetTool()
     {
@@ -34,5 +24,15 @@ class ReadFileTool : ITool
                 Required = ["path"],
             },
         };
+    }
+
+    public string Run(IReadOnlyDictionary<string, JsonElement> input)
+    {
+        return Run(input["path"].GetString()!);
+    }
+
+    static string Run(string path)
+    {
+        return File.ReadAllText(path);
     }
 }
